@@ -30,13 +30,15 @@ logger = logging.getLogger(__name__)
 
 
 logger.addHandler(AzureLogHandler(connection_string=cfg2['appinsights']['connection_string']))
+properties = {'custom_dimensions': {'key_1': 'value_1', 'key_2': 'value_2'}}
 
-logger.info('hello there')
+
+logger.info('hello there', extra=properties)
 
 print('THE END!')
 
 
-properties = {'custom_dimensions': {'key_1': 'value_1', 'key_2': 'value_2'}}
+
 
 # Use properties in exception logs
 try:
@@ -46,3 +48,8 @@ except Exception:
 
 
 print('THE END!')
+
+
+logger.debug('debug msg', extra=properties)
+logger.error('error msg', extra=properties)
+logger.critical('critical msg', extra=properties)

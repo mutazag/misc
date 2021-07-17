@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": ["C:/Users/mutaz/OneDrive/Pictures/Samsung Gallery/DCIM/Camera"]
+            "args": ["c:/Users/mutaz/OneDrive/CameraRoll/2019/09/01", "-d", "c:/Users/mutaz/OneDrive/CameraRoll/"]
         }
     ]
 }

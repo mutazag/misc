@@ -1,0 +1,33 @@
+{
+    "description": "",
+    "tags": [],
+    "size": {
+        "height": 720,
+        "width": 1280
+    },
+    "objects": [{
+            "id": 768275656,
+            "classId": 3753641,
+            "description": "",
+            "geometryType": "rectangle",
+            "labelerLogin": "monochloride",
+            "createdAt": "2021-07-20T00:50:24.512Z",
+            "updatedAt": "2021-07-20T00:50:24.512Z",
+            "tags": [],
+            "classTitle": "II",
+            "points": {
+                "exterior": [
+                    [
+                        383,
+                        230
+                    ],
+                    [
+                        659,
+                        417
+                    ]
+                ],
+                "interior": []
+            }
+        }
+    ]
+}

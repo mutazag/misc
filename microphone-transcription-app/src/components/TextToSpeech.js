@@ -4,6 +4,8 @@ function TextToSpeech() {
   const [text, setText] = useState('');
   const [audioURL, setAudioURL] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [textFileURL, setTextFileURL] = useState(null);
+  const [textFileName, setTextFileName] = useState('');
   const audioRef = useRef(null);
 
   // Handle text input change
@@ -18,14 +20,39 @@ function TextToSpeech() {
       URL.revokeObjectURL(audioURL);
       setAudioURL(null);
     }
+    if (textFileURL) {
+      URL.revokeObjectURL(textFileURL);
+      setTextFileURL(null);
+      setTextFileName('');
+    }
   };
 
   // Dummy text-to-speech function
   const generateSpeech = () => {
+    console.log('Starting speech generation for text:', text);
     setIsGenerating(true);
     
+    // Create a text file URL but don't download automatically
+    const createTextFileURL = () => {
+      // Create a blob with the text content
+      const textBlob = new Blob([text], { type: 'text/plain' });
+      
+      // Create a URL for the blob
+      const fileURL = URL.createObjectURL(textBlob);
+      const fileName = `speech-text-${new Date().toISOString()}.txt`;
+      
+      setTextFileURL(fileURL);
+      setTextFileName(fileName);
+      console.log('Text file URL created:', fileName);
+    };
+    
+    // Create text file URL
+    createTextFileURL();
+    
     // Simulate API call delay
+    console.log('Simulating API call for speech generation...');
     setTimeout(() => {
+      console.log('Creating audio context and generating audio data');
       // Create an audio context
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
@@ -94,12 +121,14 @@ function TextToSpeech() {
       };
       
       // Create blob and URL
+      console.log('Audio generation complete, creating blob URL');
       const wavView = encodeWAV(audioData);
       const blob = new Blob([wavView], { type: 'audio/wav' });
       const url = URL.createObjectURL(blob);
       
       setAudioURL(url);
       setIsGenerating(false);
+      console.log('Speech generation completed successfully');
     }, 1500);
   };
 
@@ -151,6 +180,17 @@ function TextToSpeech() {
           </button>
         )}
       </div>
+      
+      {textFileURL && (
+        <div className="text-file-download">
+          <h3>Text Content</h3>
+          <p>
+            <a href={textFileURL} download={textFileName}>
+              Download text as file ({textFileName})
+            </a>
+          </p>
+        </div>
+      )}
       
       {audioURL && (
         <div className="audio-player">

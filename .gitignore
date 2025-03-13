@@ -131,3 +131,6 @@ secret.ini
 
 
 *.env
+
+
+node_modules/

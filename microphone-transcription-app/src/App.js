@@ -14,7 +14,7 @@ function App() {
   return (
     <div className="app">
       <header>
-        <h1>Speech Conversion Tool</h1>
+        <h1>Azure AI Speech Service </h1>
       </header>
 
       <div className="tab-navigation">

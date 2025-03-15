@@ -6,7 +6,14 @@ function TextToSpeech() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [textFileURL, setTextFileURL] = useState(null);
   const [textFileName, setTextFileName] = useState('');
+  const [error, setError] = useState(null);
   const audioRef = useRef(null);
+  const config = {
+    speechRegion:process.env.REACT_APP_SPEECH_REGION,
+    speechKey: process.env.REACT_APP_SPEECH_KEY,
+    speakerProfileId: process.env.REACT_APP_SPEECH_PROFILEID
+  };
+  
 
   // Handle text input change
   const handleTextChange = (event) => {
@@ -27,10 +34,11 @@ function TextToSpeech() {
     }
   };
 
-  // Dummy text-to-speech function
+  // Text-to-speech function with real API
   const generateSpeech = () => {
     console.log('Starting speech generation for text:', text);
     setIsGenerating(true);
+    setError(null);
     
     // Create a text file URL but don't download automatically
     const createTextFileURL = () => {
@@ -48,88 +56,62 @@ function TextToSpeech() {
     
     // Create text file URL
     createTextFileURL();
+
+  
+    // Prepare SSML for the TTS API
+    const ssml = `
+      <speak version='1.0' xml:lang='en-US' xmlns='http://www.w3.org/2001/10/synthesis'
+                                xmlns:mstts='http://www.w3.org/2001/mstts'>
+                                <voice name='DragonLatestNeural'>
+                                <mstts:ttsembedding speakerProfileId='${config.speakerProfileId}'/>
+                                <lang xml:lang='en-US'> ${text} </lang>
+                                </voice></speak>
+    `;
     
-    // Simulate API call delay
-    console.log('Simulating API call for speech generation...');
-    setTimeout(() => {
-      console.log('Creating audio context and generating audio data');
-      // Create an audio context
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      // Create dummy audio - a simple tone sequence
-      oscillator.type = 'sine';
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      // Generate audio data
-      const audioData = [];
-      const sampleRate = 44100;
-      const duration = 3; // seconds
-      
-      for (let i = 0; i < sampleRate * duration; i++) {
-        const t = i / sampleRate;
-        // Generate a tone based on character codes to simulate voice
-        const frequency = 220 + (text.charCodeAt(i % text.length) % 20) * 10;
-        const sample = Math.sin(2 * Math.PI * frequency * t);
-        audioData.push(sample * 0.5);
+    // Replace with your actual endpoint and headers
+    const endpoint = `https://${config.speechRegion}.tts.speech.microsoft.com/cognitiveservices/v1`;
+    const headers = {
+      'Ocp-Apim-Subscription-Key': config.speechKey,
+      'Content-Type': 'application/ssml+xml',
+      'X-Microsoft-OutputFormat': 'audio-16khz-128kbitrate-mono-mp3',
+      'User-Agent': 'TextToSpeechApp'
+    };
+    
+    console.log('Sending request to TTS API...');
+    
+    fetch(endpoint, {
+      method: 'POST',
+      headers: headers,
+      body: ssml
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      
-      // Convert to wav format
-      const buffer = audioContext.createBuffer(1, audioData.length, sampleRate);
-      buffer.getChannelData(0).set(audioData);
-      
-      // Convert buffer to wav blob
-      const encodeWAV = (samples) => {
-        const buffer = new ArrayBuffer(44 + samples.length * 2);
-        const view = new DataView(buffer);
-        
-        // RIFF chunk descriptor
-        writeString(view, 0, 'RIFF');
-        view.setUint32(4, 36 + samples.length * 2, true);
-        writeString(view, 8, 'WAVE');
-        
-        // fmt sub-chunk
-        writeString(view, 12, 'fmt ');
-        view.setUint32(16, 16, true);
-        view.setUint16(20, 1, true); // PCM
-        view.setUint16(22, 1, true); // mono
-        view.setUint32(24, sampleRate, true);
-        view.setUint32(28, sampleRate * 2, true); // byte rate
-        view.setUint16(32, 2, true); // block align
-        view.setUint16(34, 16, true); // bits per sample
-        
-        // data sub-chunk
-        writeString(view, 36, 'data');
-        view.setUint32(40, samples.length * 2, true);
-        
-        // Write the PCM samples
-        const volume = 0.5;
-        for (let i = 0; i < samples.length; i++) {
-          const sample = Math.max(-1, Math.min(1, samples[i])) * volume;
-          view.setInt16(44 + i * 2, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
-        }
-        
-        return view;
-      };
-      
-      const writeString = (view, offset, string) => {
-        for (let i = 0; i < string.length; i++) {
-          view.setUint8(offset + i, string.charCodeAt(i));
-        }
-      };
-      
-      // Create blob and URL
-      console.log('Audio generation complete, creating blob URL');
-      const wavView = encodeWAV(audioData);
-      const blob = new Blob([wavView], { type: 'audio/wav' });
+      console.log('Response received from API');
+      return response.blob();
+    })
+    .then(blob => {
+      // Create a URL for the audio blob
       const url = URL.createObjectURL(blob);
+      console.log('Audio blob URL created');
       
+      // Set the state to update the UI
       setAudioURL(url);
       setIsGenerating(false);
+      
       console.log('Speech generation completed successfully');
-    }, 1500);
+      
+      // Auto play the audio if desired
+      if (audioRef.current) {
+        audioRef.current.play();
+      }
+    })
+    .catch(error => {
+      console.error('Error generating speech:', error);
+      setError(`Error: ${error.message}`);
+      setIsGenerating(false);
+    });
   };
 
   // Download the generated audio
@@ -180,6 +162,12 @@ function TextToSpeech() {
           </button>
         )}
       </div>
+      
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
       
       {textFileURL && (
         <div className="text-file-download">

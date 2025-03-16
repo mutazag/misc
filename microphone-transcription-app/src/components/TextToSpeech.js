@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 function TextToSpeech() {
   const [text, setText] = useState('');
@@ -7,6 +7,11 @@ function TextToSpeech() {
   const [textFileURL, setTextFileURL] = useState(null);
   const [textFileName, setTextFileName] = useState('');
   const [error, setError] = useState(null);
+
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [duration, setDuration] = useState(0); // Optional: to show audio duration
+  const [currentTime, setCurrentTime] = useState(0); // Optional: to show current playback position
+
   const audioRef = useRef(null);
   const config = {
     speechRegion:process.env.REACT_APP_SPEECH_REGION,
@@ -33,6 +38,45 @@ function TextToSpeech() {
       setTextFileName('');
     }
   };
+
+  // Handle audio playback events
+  useEffect(() => {
+    const audioElement = audioRef.current;
+    if (audioElement) {
+      const handlePlay = () => { setIsPlaying(true); };
+      const handlePause = () => { setIsPlaying(false); };
+      const handleEnded = () => { setIsPlaying(false); };
+      const handleDurationChange = () => { setDuration(audioElement.duration); };
+      const handleTimeUpdate = () => { setCurrentTime(audioElement.currentTime); };
+
+      audioElement.addEventListener('play', handlePlay);
+      audioElement.addEventListener('pause', handlePause);
+      audioElement.addEventListener('ended', handleEnded);
+      audioElement.addEventListener('durationchange', handleDurationChange);
+      audioElement.addEventListener('timeupdate', handleTimeUpdate);
+
+
+      return () => {
+        audioElement.removeEventListener('play', handlePlay);
+        audioElement.removeEventListener('pause', handlePause);
+        audioElement.removeEventListener('ended', handleEnded);
+        audioElement.removeEventListener('durationchange', handleDurationChange);
+        audioElement.removeEventListener('timeupdate', handleTimeUpdate);
+      }
+    } 
+  }, [audioRef.current] );
+  
+
+
+  const togglePlayPause = () => {
+    if (audioRef.current) {
+      if (isPlaying) { 
+        audioRef.current.pause(); 
+      } else { 
+        audioRef.current.play(); 
+      }
+      }
+    };
 
   // Text-to-speech function with real API
   const generateSpeech = () => {
@@ -64,9 +108,13 @@ function TextToSpeech() {
                                 xmlns:mstts='http://www.w3.org/2001/mstts'>
                                 <voice name='DragonLatestNeural'>
                                 <mstts:ttsembedding speakerProfileId='${config.speakerProfileId}'/>
-                                <lang xml:lang='en-US'> ${text} </lang>
+                                <lang xml:lang='ar-Jo'> ${text} </lang>
                                 </voice></speak>
     `;
+
+    //السلام المفقود: ما هي التحديات التي تعرقل تحقيق سلام دائم بين أوكرانيا وروسيا؟
+    //en-AU
+    //ar-jo
     
     // Replace with your actual endpoint and headers
     const endpoint = `https://${config.speechRegion}.tts.speech.microsoft.com/cognitiveservices/v1`;
@@ -103,9 +151,9 @@ function TextToSpeech() {
       console.log('Speech generation completed successfully');
       
       // Auto play the audio if desired
-      if (audioRef.current) {
-        audioRef.current.play();
-      }
+      // if (audioRef.current) {
+      //   audioRef.current.play();
+      // }
     })
     .catch(error => {
       console.error('Error generating speech:', error);
@@ -125,6 +173,12 @@ function TextToSpeech() {
       document.body.removeChild(a);
     }
   };
+
+  const onAudioLoad = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+    }
+  }
 
   return (
     <div className="text-to-speech">
@@ -187,11 +241,40 @@ function TextToSpeech() {
             ref={audioRef} 
             controls 
             src={audioURL}
+            onLoadedData={onAudioLoad}
           >
             Your browser does not support the audio element.
           </audio>
+
+
         </div>
       )}
+
+
+      {audioURL && (
+        <div className="audio-duration">
+          <p>Duration: {duration ? `${Math.floor(duration / 60)}:${Math.floor(duration % 60)}` : 'Loading...'}</p>
+          <p>Current Time: {currentTime ? `${Math.floor(currentTime / 60)}:${Math.floor(currentTime % 60)}` : 'Loading...'}</p>
+        </div>
+      )}
+
+      {audioURL && (
+        <div className="audio-controls">
+          <button onClick={() => audioRef.current.currentTime -= 5}>Rewind 5s</button>
+          <button onClick={() => audioRef.current.currentTime += 5}>Forward 5s</button>
+        </div>
+      )}
+
+      {audioURL && (
+        <div className="play-pause-button">
+          <button onClick={togglePlayPause}>
+            {isPlaying ? 'Pause' : 'Play'}
+          </button>
+        </div>
+      )}
+
+
+
     </div>
   );
 }

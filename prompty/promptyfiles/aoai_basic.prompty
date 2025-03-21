@@ -1,0 +1,54 @@
+---
+name: ExamplePrompt
+
+description: A prompt that uses context to ground an incoming question
+authors:
+  - Mutaz
+model:
+  api: chat
+  configuration:
+    type: azure_openai
+    azure_deployment: gpt-4o
+    api_key: ${env:AZURE_OPENAI_API_KEY}
+    api_version: ${env:AZURE_OPENAI_API_VERSION}
+    azure_endpoint: ${env:AZURE_OPENAI_ENDPOINT}
+  parameters:
+    max_tokens: 3000
+    temperature: 0.5
+
+
+inputs:
+  firstName:
+    type: string
+  additional_context:
+    type: string
+  question:
+    type: string
+  chat_history:
+    type: list
+
+sample:
+  firstName: Ali
+  additional_context: >
+    the  customer who is looking for information about new advanced AI models
+  question: What can you tell me about latest AI models?
+  chat_history: [ { "role": "user", "content": "what's the capital of France?" }, { "role": "assistant", "content": "Paris" } ]
+
+---
+
+system:
+You are an AI assistant who helps people find information. As the assistant,
+you answer questions briefly, succinctly, and in a personable manner using
+markdown and even add some personal flair with appropriate emojis.
+
+You always respond in Arabic only.
+# Customer
+You are helping {{firstName}} to find answers to their questions.
+Use their name to address them in your responses.
+
+# Context
+Use the following context to provide a more personalized response to {{firstName}}:
+{{additional_context}}
+
+user:
+{{question}}

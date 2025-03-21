@@ -134,3 +134,13 @@ secret.ini
 
 
 node_modules/
+prompty/.runs/execute.20250321.200247.tracy
+prompty/.runs/execute.20250321.200341.tracy
+prompty/promptyfiles/.promptflow/ux.inputs.json
+prompty/promptyfiles/.promptflow/aoai_basic/flow.detail.json
+prompty/promptyfiles/.promptflow/aoai_basic/flow.output.json
+prompty/promptyfiles/.promptflow/aoai_basic/flow.tools.json
+prompty/promptyfiles/.promptflow/aoai_basic copy/flow.tools.json
+prompty/promptyfiles/.promptflow/aoai_basic_o3mini/flow.tools.json
+prompty/promptyfiles/.promptflow/basic/flow.tools.json
+prompty/promptyfiles/.promptflow/basic copy/flow.tools.json

@@ -1,0 +1,13 @@
+promptflow
+promptflow-tools
+prompty
+prompty[azure]
+prompty[serverless]
+
+python-dotenv
+
+
+# promptflow-core
+# promptflow-devkit
+# promptflow-tracing
+# promptflow-azure

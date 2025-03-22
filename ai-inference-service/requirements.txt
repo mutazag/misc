@@ -4,6 +4,7 @@ mistralai~=0.4.2
 python-dotenv~=1.0.1
 ipykernel~=6.29.5
 openai
+openai-agents
 semantic-kernel~=1.20.0
 autogen-ext[azure]
 autogen-core~=0.4.5
@@ -12,3 +13,5 @@ azure-ai-projects
 autogen-ext==0.4.5
 pydantic
 ollama
+
+geopy

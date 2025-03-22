@@ -10,5 +10,5 @@ autogen-core~=0.4.5
 autogen-agentchat
 azure-ai-projects
 autogen-ext==0.4.5
-pydantic 
-
+pydantic
+ollama

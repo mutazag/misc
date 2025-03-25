@@ -10,3 +10,9 @@ mlflow
 azureml-mlflow
 pydantic
 geopy
+azure-ai-inference[opentelemetry]
+opentelemetry-exporter-otlp
+opentelemetry-api
+opentelemetry-sdk
+ipywidgets
+

@@ -20,4 +20,6 @@
 
 
 ## 1.3. Installation Instructions 🛠️
-- **Pip Installation:** `pip install markitdown[all]`.
+**Pip Installation:** `pip install markitdown[all]`.
+
+Packages installed with `markitdown[all]` will include youtube-transcript-api, azure-core, azure-ai-documentintelligence and azure-identity.

@@ -18,7 +18,7 @@ function TextToSpeech() {
     speechKey: process.env.REACT_APP_SPEECH_KEY,
     speakerProfileId: process.env.REACT_APP_SPEECH_PROFILEID
   };
-  
+
 
   // Handle text input change
   const handleTextChange = (event) => {
@@ -63,17 +63,17 @@ function TextToSpeech() {
         audioElement.removeEventListener('durationchange', handleDurationChange);
         audioElement.removeEventListener('timeupdate', handleTimeUpdate);
       }
-    } 
+    }
   }, [audioRef.current] );
-  
+
 
 
   const togglePlayPause = () => {
     if (audioRef.current) {
-      if (isPlaying) { 
-        audioRef.current.pause(); 
-      } else { 
-        audioRef.current.play(); 
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
       }
       }
     };
@@ -83,28 +83,28 @@ function TextToSpeech() {
     console.log('Starting speech generation for text:', text);
     setIsGenerating(true);
     setError(null);
-    
+
     // Create a text file URL but don't download automatically
     const createTextFileURL = () => {
       // Create a blob with the text content
       const textBlob = new Blob([text], { type: 'text/plain' });
-      
+
       // Create a URL for the blob
       const fileURL = URL.createObjectURL(textBlob);
       const fileName = `speech-text-${new Date().toISOString()}.txt`;
-      
+
       setTextFileURL(fileURL);
       setTextFileName(fileName);
       console.log('Text file URL created:', fileName);
     };
-    
+
     // Create text file URL
     createTextFileURL();
 
-  
+
     // Prepare SSML for the TTS API
     const ssml = `
-      <speak version='1.0' xml:lang='en-US' xmlns='http://www.w3.org/2001/10/synthesis'
+      <speak version='1.0' xml:lang='zh-CN' xmlns='http://www.w3.org/2001/10/synthesis'
                                 xmlns:mstts='http://www.w3.org/2001/mstts'>
                                 <voice name='DragonLatestNeural'>
                                 <mstts:ttsembedding speakerProfileId='${config.speakerProfileId}'/>
@@ -115,7 +115,9 @@ function TextToSpeech() {
     //السلام المفقود: ما هي التحديات التي تعرقل تحقيق سلام دائم بين أوكرانيا وروسيا؟
     //en-AU
     //ar-jo
-    
+
+
+
     // Replace with your actual endpoint and headers
     const endpoint = `https://${config.speechRegion}.tts.speech.microsoft.com/cognitiveservices/v1`;
     const headers = {
@@ -124,9 +126,9 @@ function TextToSpeech() {
       'X-Microsoft-OutputFormat': 'audio-16khz-128kbitrate-mono-mp3',
       'User-Agent': 'TextToSpeechApp'
     };
-    
+
     console.log('Sending request to TTS API...');
-    
+
     fetch(endpoint, {
       method: 'POST',
       headers: headers,
@@ -143,13 +145,13 @@ function TextToSpeech() {
       // Create a URL for the audio blob
       const url = URL.createObjectURL(blob);
       console.log('Audio blob URL created');
-      
+
       // Set the state to update the UI
       setAudioURL(url);
       setIsGenerating(false);
-      
+
       console.log('Speech generation completed successfully');
-      
+
       // Auto play the audio if desired
       // if (audioRef.current) {
       //   audioRef.current.play();
@@ -190,7 +192,7 @@ function TextToSpeech() {
           placeholder="Enter text to convert to speech..."
         />
       </div>
-      
+
       <div className="tts-controls">
         <button
           className={`speak-button ${isGenerating ? 'generating' : ''}`}
@@ -199,14 +201,14 @@ function TextToSpeech() {
         >
           {isGenerating ? 'Generating...' : 'Speak Text'}
         </button>
-        
+
         <button
           className="clear-button"
           onClick={clearText}
         >
           Clear Text
         </button>
-        
+
         {audioURL && (
           <button
             className="download-button"
@@ -216,13 +218,13 @@ function TextToSpeech() {
           </button>
         )}
       </div>
-      
+
       {error && (
         <div className="error-message">
           {error}
         </div>
       )}
-      
+
       {textFileURL && (
         <div className="text-file-download">
           <h3>Text Content</h3>
@@ -233,13 +235,13 @@ function TextToSpeech() {
           </p>
         </div>
       )}
-      
+
       {audioURL && (
         <div className="audio-player">
           <h3>Audio Preview</h3>
-          <audio 
-            ref={audioRef} 
-            controls 
+          <audio
+            ref={audioRef}
+            controls
             src={audioURL}
             onLoadedData={onAudioLoad}
           >

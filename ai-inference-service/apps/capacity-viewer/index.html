@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Model Capacity Viewer</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI Model Capacity Viewer</h1>
+            <button id="refreshButton">Refresh Data</button>
+        </header>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label for="locationFilter">Location:</label>
+                <select id="locationFilter"></select>
+            </div>
+        </div>
+
+        <div class="data-container">
+            <h3 id="locationTitle">Model capacity in <span id="selectedLocation"></span></h3>
+            <h4>Model Name: o3-mini</h4>
+            <div class="loader" id="loader"></div>
+            <table id="capacityTable">
+                <thead>
+                    <tr>
+                        <th>Model Name</th>
+                        <th>Resource Name</th>
+                        <th>SKU</th>
+                        <th>Available Capacity</th>
+                    </tr>
+                </thead>
+                <tbody id="capacityData">
+                    <!-- Data will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="js/app.js"></script>
+</body>
+</html>
